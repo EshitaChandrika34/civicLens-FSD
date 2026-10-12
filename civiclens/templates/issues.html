@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Issues | CivicLens</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/issues.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/accessibility.css') }}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <a class="logo" href="{{ url_for('home') }}">CivicLens.</a>
+
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a class="active" href="{{ url_for('issues') }}">Explore Issues</a>
+            <a href="{{ url_for('report') }}">Report an Issue</a>
+        </div>
+    </nav>
+
+    <main class="container">
+
+        <section class="page-heading">
+            <span class="eyebrow">COMMUNITY REPORTS</span>
+            <h1>Explore Local Issues</h1>
+            <p>
+                See what needs attention in your community and follow
+                the progress toward a better neighbourhood.
+            </p>
+        </section>
+
+        <section class="summary">
+            <div>
+                <span>Total Reports</span>
+                <h2>{{ issues|length }}</h2>
+            </div>
+            <div>
+                <span>In Progress</span>
+                <h2>{{ issues|selectattr('status', 'equalto', 'In Progress')|list|length }}</h2>
+            </div>
+            <div>
+                <span>Resolved</span>
+                <h2>{{ issues|selectattr('status', 'equalto', 'Resolved')|list|length }}</h2>
+            </div>
+        </section>
+
+        <section class="reports-section">
+            <div class="section-title">
+                <div>
+                    <h2>Reported Issues</h2>
+                    <p>Latest reports submitted by residents</p>
+                </div>
+
+                <a class="report-button" href="{{ url_for('report') }}">
+                    + Report an Issue
+                </a>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="message {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% if issues %}
+                <div class="issue-grid">
+                    {% for issue in issues %}
+                        <article class="issue-card">
+
+                            {% if issue.photo_path %}
+                                <img
+                                    class="issue-photo"
+                                    src="{{ url_for('static', filename=issue.photo_path) }}"
+                                    alt="Photo for {{ issue.title }}"
+                                >
+                            {% else %}
+                                <div class="issue-placeholder">
+                                    {% if issue.category == 'Roads' %}
+                                        🛣️
+                                    {% elif issue.category == 'Garbage' %}
+                                        🗑️
+                                    {% elif issue.category == 'Water' %}
+                                        💧
+                                    {% elif issue.category == 'Streetlights' %}
+                                        💡
+                                    {% elif issue.category == 'Drainage' %}
+                                        🌧️
+                                    {% else %}
+                                        🏙️
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
+                            <div class="issue-content">
+
+                                <div class="card-top">
+                                    <span class="category">
+                                        {{ issue.category }}
+                                    </span>
+
+                                    <span class="status
+                                        {% if issue.status == 'Resolved' %}
+                                            resolved
+                                        {% elif issue.status == 'In Progress' %}
+                                            in-progress
+                                        {% else %}
+                                            reported
+                                        {% endif %}">
+                                        {{ issue.status }}
+                                    </span>
+                                </div>
+
+                         <h3>
+    <a class="issue-title-link"
+       href="{{ url_for('issue_details', issue_id=issue.issue_id) }}">
+        {{ issue.title }}
+    </a>
+</h3>
+
+                                <p class="description">
+                                    {{ issue.description }}
+                                </p>
+
+                                <div class="issue-location">
+                                    <span>📍</span>
+                                    <span>{{ issue.locality }}</span>
+                                </div>
+
+                                <div class="card-footer">
+                                    <span>
+                                        Report #{{ issue.issue_id }}
+                                    </span>
+
+                                    <span>
+                                        {% if issue.created_at %}
+                                            {{ issue.created_at.strftime('%d %b %Y') }}
+                                        {% else %}
+                                            Date unavailable
+                                        {% endif %}
+                                        <a class="details-link"
+   href="{{ url_for('issue_details', issue_id=issue.issue_id) }}">
+    View Details →
+</a>
+                                    </span>
+                                </div>
+
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">📋</div>
+                    <h3>No reports yet</h3>
+                    <p>
+                        Be the first to report a local problem and
+                        help make your community better.
+                    </p>
+                    <a class="report-button" href="{{ url_for('report') }}">
+                        Report the First Issue
+                    </a>
+                </div>
+            {% endif %}
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 CivicLens. Your City. Your Voice.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/accessibility.js') }}" defer></script>
+</body>
+</html>

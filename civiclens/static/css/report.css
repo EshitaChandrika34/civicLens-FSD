@@ -1,0 +1,361 @@
+
+/* ========================================
+   CivicLens - Report Issue Page
+   File: static/css/report.css
+   ======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f7fb;
+    color: #202b3c;
+    line-height: 1.6;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+/* NAVBAR */
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 7%;
+    background: #ffffff;
+    border-bottom: 1px solid #e7eaf0;
+    gap: 20px;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: bold;
+    color: #2257d6;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+}
+
+.nav-links a {
+    color: #39465a;
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    color: #2257d6;
+}
+
+/* PAGE HEADING */
+
+.section {
+    padding: 45px 7%;
+}
+
+.section-heading {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.tag {
+    display: inline-block;
+    margin-bottom: 10px;
+    color: #2257d6;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+}
+
+.section-heading h1,
+.section-heading h2 {
+    color: #17243a;
+    margin-bottom: 10px;
+}
+
+.section-heading h1,
+.section-heading h2 {
+    font-size: 32px;
+}
+
+.section-heading p {
+    color: #68758a;
+    font-size: 16px;
+}
+
+/* REPORT FORM */
+
+.report-form {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 32px;
+    background: #ffffff;
+    border: 1px solid #e5eaf2;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(29, 49, 84, 0.07);
+}
+
+.report-form label {
+    display: block;
+    margin: 18px 0 7px;
+    color: #25334a;
+    font-weight: 600;
+}
+
+.report-form input,
+.report-form select,
+.report-form textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #d4dce8;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #202b3c;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.report-form input:focus,
+.report-form select:focus,
+.report-form textarea:focus {
+    border-color: #2257d6;
+    box-shadow: 0 0 0 3px rgba(34, 87, 214, 0.12);
+}
+
+.report-form textarea {
+    min-height: 140px;
+    resize: vertical;
+}
+
+.report-form input[type="file"] {
+    padding: 10px;
+    background: #f8faff;
+}
+
+/* LOCATION PICKER */
+
+.location-heading {
+    margin-top: 28px;
+}
+
+.location-heading label {
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.location-heading p {
+    color: #68758a;
+    font-size: 14px;
+    margin-bottom: 14px;
+}
+
+.map-search-row {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+    margin-bottom: 12px;
+}
+
+.map-search-row input {
+    min-width: 0;
+    flex: 1;
+}
+
+.secondary-button {
+    flex-shrink: 0;
+    padding: 10px 18px;
+    border: 1px solid #2257d6;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #2257d6;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.secondary-button:hover {
+    background: #edf3ff;
+}
+
+.secondary-button:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+#location-map {
+    width: 100%;
+    height: 360px;
+    border: 1px solid #d4dce8;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #eaf0f7;
+    z-index: 1;
+}
+
+.location-message {
+    margin-top: 12px;
+    padding: 11px 13px;
+    border-radius: 8px;
+    background: #f0f4fa;
+    color: #526176;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.location-message.success-message {
+    background: #e8f8ef;
+    color: #17683a;
+}
+
+.location-message.error-message {
+    background: #fff0f0;
+    color: #a52828;
+}
+
+.coordinate-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.coordinate-fields label {
+    margin-top: 10px;
+}
+
+.coordinate-fields input[readonly] {
+    background: #f5f7fb;
+    color: #526176;
+    cursor: default;
+}
+
+/* BUTTONS AND LINKS */
+
+.primary-button,
+.report-form input[type="submit"] {
+    display: block;
+    margin-top: 24px;
+    width: 100%;
+    padding: 14px;
+    background: #2257d6;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.primary-button:hover,
+.report-form input[type="submit"]:hover {
+    background: #1743ae;
+}
+
+.text-link {
+    display: block;
+    margin-top: 16px;
+    text-align: center;
+    color: #2257d6;
+    font-size: 14px;
+}
+
+.text-link:hover {
+    text-decoration: underline;
+}
+
+/* SUCCESS AND ERROR MESSAGES */
+
+.form-message {
+    max-width: 760px;
+    margin: 15px auto;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.form-message.success {
+    background: #e8f8ef;
+    color: #17683a;
+    border: 1px solid #b9e8ca;
+}
+
+.form-message.error {
+    background: #fff0f0;
+    color: #a52828;
+    border: 1px solid #f0c5c5;
+}
+
+/* FOOTER */
+
+.footer {
+    margin-top: 35px;
+    padding: 25px 7%;
+    text-align: center;
+    background: #17243a;
+    color: #ffffff;
+}
+
+.footer p {
+    color: #d7deea;
+    font-size: 14px;
+}
+
+/* MOBILE RESPONSIVE DESIGN */
+
+@media (max-width: 700px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 16px 5%;
+    }
+
+    .nav-links {
+        gap: 14px;
+    }
+
+    .section {
+        padding: 30px 5%;
+    }
+
+    .section-heading h1,
+    .section-heading h2 {
+        font-size: 27px;
+    }
+
+    .report-form {
+        padding: 22px 18px;
+    }
+
+    #location-map {
+        height: 300px;
+    }
+
+    .coordinate-fields {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+
+    .map-search-row {
+        flex-direction: column;
+    }
+
+    .secondary-button {
+        width: 100%;
+    }
+}

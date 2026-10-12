@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Issue Map | CivicLens</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/map.css') }}">
+
+    <!-- Leaflet CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/accessibility.css') }}">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <a class="logo" href="{{ url_for('home') }}">CivicLens.</a>
+
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('issues') }}">Explore Issues</a>
+            <a href="{{ url_for('issue_map') }}" class="active">Issue Map</a>
+            <a href="{{ url_for('report') }}">Report an Issue</a>
+
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('my_reports') }}">My Reports</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('signup') }}">Sign Up</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="container">
+
+        <section class="page-heading">
+            <div>
+                <p class="eyebrow">SMART COMMUNITY REPORTING</p>
+                <h1>Community Issue Map</h1>
+                <p class="subtitle">
+                    Explore reported civic problems by their recorded location.
+                </p>
+            </div>
+
+            <a class="report-button" href="{{ url_for('report') }}">
+                + Report an Issue
+            </a>
+        </section>
+
+        <section class="stats-row">
+            <div class="stat-card">
+                <span class="stat-label">Mapped Issues</span>
+                <strong>{{ map_issues|length }}</strong>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">Reported</span>
+                <strong>
+                    {{ map_issues|selectattr('status', 'equalto', 'Reported')|list|length }}
+                </strong>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">In Progress</span>
+                <strong>
+                    {{ map_issues|selectattr('status', 'equalto', 'In Progress')|list|length }}
+                </strong>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">Resolved</span>
+                <strong>
+                    {{ map_issues|selectattr('status', 'equalto', 'Resolved')|list|length }}
+                </strong>
+            </div>
+        </section>
+
+        <section class="map-card">
+            <div class="map-heading">
+                <div>
+                    <h2>Reported Locations</h2>
+                    <p>Click a marker to view an issue.</p>
+                </div>
+
+                <span class="map-label">
+                    OpenStreetMap
+                </span>
+            </div>
+
+            <div id="map" aria-label="Interactive map of civic issues"></div>
+
+            <p id="map-message" class="map-message" role="status"></p>
+
+            <div class="map-legend">
+                <span><i class="legend-dot reported-dot"></i> Reported</span>
+                <span><i class="legend-dot progress-dot"></i> In Progress</span>
+                <span><i class="legend-dot resolved-dot"></i> Resolved</span>
+            </div>
+        </section>
+
+        <section class="issues-section">
+            <div class="section-heading">
+                <div>
+                    <h2>Issues on the Map</h2>
+                    <p>Choose an issue to view its full report.</p>
+                </div>
+
+                <a href="{{ url_for('issues') }}">Explore all issues →</a>
+            </div>
+
+            {% if map_issues %}
+                <div class="issue-grid">
+                    {% for issue in map_issues %}
+                        <article class="issue-card">
+                            <div class="issue-card-top">
+                                <span class="category">{{ issue.category }}</span>
+                                <span class="status-badge
+                                    {% if issue.status == 'Resolved' %}
+                                        resolved
+                                    {% elif issue.status == 'In Progress' %}
+                                        in-progress
+                                    {% else %}
+                                        reported
+                                    {% endif %}">
+                                    {{ issue.status }}
+                                </span>
+                            </div>
+
+                            <h3>{{ issue.title }}</h3>
+                            <p class="locality">📍 {{ issue.locality }}</p>
+
+                            <a href="{{ url_for('issue_details', issue_id=issue.issue_id) }}">
+                                View Issue Details →
+                            </a>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <h3>No issues have map coordinates yet</h3>
+                    <p>
+                        Reports will appear on the map after valid latitude
+                        and longitude values are saved for them.
+                    </p>
+                    <a href="{{ url_for('issues') }}">Browse existing reports</a>
+                </div>
+            {% endif %}
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 CivicLens. Your City. Your Voice.</p>
+        <p>Map data © OpenStreetMap contributors</p>
+    </footer>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // Safely transfer database data from Flask to JavaScript.
+        const issues = {{ map_issues | tojson }};
+
+        const map = L.map("map");
+
+        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+        }).addTo(map);
+
+        const markers = [];
+        const message = document.getElementById("map-message");
+
+        function markerColor(status) {
+            if (status === "Resolved") {
+                return "#16a34a";
+            }
+
+            if (status === "In Progress") {
+                return "#2563eb";
+            }
+
+            return "#e59b16";
+        }
+
+        // Build popup content with textContent so report text
+        // is treated as text rather than executable HTML.
+        function createPopup(issue) {
+            const wrapper = document.createElement("div");
+            wrapper.className = "map-popup";
+
+            const title = document.createElement("h3");
+            title.textContent = issue.title;
+            wrapper.appendChild(title);
+
+            const category = document.createElement("p");
+            category.textContent = "Category: " + issue.category;
+            wrapper.appendChild(category);
+
+            const locality = document.createElement("p");
+            locality.textContent = "Locality: " + issue.locality;
+            wrapper.appendChild(locality);
+
+            const status = document.createElement("p");
+            status.textContent = "Status: " + issue.status;
+            wrapper.appendChild(status);
+
+            const link = document.createElement("a");
+            link.textContent = "View full report";
+            link.href = "/issues/" + encodeURIComponent(issue.issue_id);
+            wrapper.appendChild(link);
+
+            return wrapper;
+        }
+
+        issues.forEach(function(issue) {
+            const marker = L.circleMarker(
+                [issue.latitude, issue.longitude],
+                {
+                    radius: 9,
+                    color: markerColor(issue.status),
+                    fillColor: markerColor(issue.status),
+                    fillOpacity: 0.85,
+                    weight: 2
+                }
+            ).addTo(map);
+
+            marker.bindPopup(createPopup(issue));
+            markers.push(marker);
+        });
+
+        if (markers.length > 0) {
+            const group = L.featureGroup(markers);
+            map.fitBounds(group.getBounds().pad(0.2));
+
+            if (markers.length === 1) {
+                map.setZoom(14);
+            }
+
+            message.textContent =
+                "Showing " + markers.length +
+                " issue(s) with valid recorded coordinates.";
+        } else {
+            // Neutral default view only; no issue marker is invented.
+            map.setView([20, 0], 2);
+
+            message.textContent =
+                "No reports have valid coordinates yet. " +
+                "The map is ready to display them when coordinates are saved.";
+        }
+    </script>
+
+    <script src="{{ url_for('static', filename='js/accessibility.js') }}" defer></script>
+</body>
+</html>

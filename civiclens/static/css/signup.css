@@ -1,0 +1,154 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f7fb;
+    color: #202b3c;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+a {
+    text-decoration: none;
+}
+
+.navbar {
+    background: #fff;
+    padding: 18px 7%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5eaf2;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: bold;
+    color: #2257d6;
+}
+
+.nav-link {
+    color: #435069;
+}
+
+.auth-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 35px 18px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 460px;
+    background: #fff;
+    padding: 35px;
+    border: 1px solid #e5eaf2;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(29, 49, 84, 0.07);
+}
+
+.icon {
+    text-align: center;
+    font-size: 38px;
+    margin-bottom: 10px;
+}
+
+.auth-card h1 {
+    text-align: center;
+    color: #17243a;
+    font-size: 29px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #68758a;
+    font-size: 14px;
+    margin: 10px 0 24px;
+}
+
+.auth-card label {
+    display: block;
+    margin: 16px 0 7px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.auth-card input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d4dce8;
+    border-radius: 8px;
+    outline: none;
+}
+
+.auth-card input:focus {
+    border-color: #2257d6;
+    box-shadow: 0 0 0 3px rgba(34, 87, 214, 0.1);
+}
+
+.auth-card button {
+    width: 100%;
+    padding: 13px;
+    margin-top: 24px;
+    border: none;
+    border-radius: 8px;
+    background: #2257d6;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.auth-card button:hover {
+    background: #1743ae;
+}
+
+.message {
+    padding: 11px;
+    border-radius: 7px;
+    margin: 12px 0;
+    font-size: 14px;
+}
+
+.message.success {
+    background: #e8f8ef;
+    color: #17683a;
+}
+
+.message.error {
+    background: #fff0f0;
+    color: #a52828;
+}
+
+.switch-link {
+    text-align: center;
+    margin-top: 22px;
+    color: #68758a;
+    font-size: 14px;
+}
+
+.switch-link a {
+    color: #2257d6;
+    font-weight: bold;
+}
+
+.footer {
+    text-align: center;
+    padding: 20px;
+    color: #68758a;
+    font-size: 13px;
+}
+
+@media (max-width: 500px) {
+    .auth-card {
+        padding: 25px 20px;
+    }
+}

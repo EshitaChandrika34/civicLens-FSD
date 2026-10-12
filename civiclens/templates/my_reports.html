@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Reports | CivicLens</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/my_reports.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/accessibility.css') }}">
+</head>
+<body>
+
+    <header class="navbar">
+        <h2>CivicLens</h2>
+        <nav>
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('my_reports') }}" class="active">My Reports</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>My Reports</h1>
+        <p class="subtitle">Track the status of the issues you have reported.</p>
+
+        {% if reports %}
+            <div class="reports-grid">
+                {% for report in reports %}
+                    <div class="report-card">
+                        {% if report.is_delayed %}
+                            <div class="civiclens-delay-alert" role="alert">⚠️ Delayed: unresolved for more than 48 hours.</div>
+                        {% endif %}
+                        <h3>{{ report.title }}</h3>
+
+                        <p><strong>Category:</strong> {{ report.category }}</p>
+                        <p><strong>Locality:</strong> {{ report.locality }}</p>
+                        <p><strong>Priority:</strong> {{ report.priority or 'Normal' }}</p>
+
+                        <p>
+                            <strong>Status:</strong>
+                            <span class="status">
+                                {{ report.status }}
+                            </span>
+                        </p>
+
+                        <p class="date">
+                            Reported on:
+                            {{ report.created_at.strftime('%d-%m-%Y') if report.created_at else 'N/A' }}
+                        </p>
+
+                        <a class="details-btn"
+                           href="{{ url_for('issue_details', issue_id=report.issue_id) }}">
+                            View Details
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h2>No reports yet</h2>
+                <p>You have not submitted any issues.</p>
+                <a class="details-btn" href="{{ url_for('report') }}">
+                    Report an Issue
+                </a>
+            </div>
+        {% endif %}
+    </main>
+
+    <script src="{{ url_for('static', filename='js/accessibility.js') }}" defer></script>
+</body>
+</html>

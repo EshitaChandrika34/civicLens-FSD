@@ -1,0 +1,26 @@
+# CivicLens updated features
+
+## New features
+- Unresolved issue alerts after 48 hours (2 days). Alerts are not shown for resolved issues.
+- Telugu / English language selector on all existing HTML pages.
+- Read Aloud and Stop Reading controls using browser speech synthesis.
+- Larger Text and Smaller Text controls for senior-friendly reading.
+
+## Run on Windows / VS Code
+1. Extract this ZIP.
+2. Open the extracted `civiclens` folder in VS Code.
+3. Open the terminal in that folder.
+4. Activate your existing virtual environment if you have one:
+   `venv\\Scripts\\activate`
+   If this extracted copy does not include a virtual environment, install the project's required packages in your environment, including Flask and mysql-connector-python.
+5. Check `db.py` contains your correct local MySQL connection settings.
+6. Run:
+   `python app.py`
+7. Open the local URL printed in the terminal (usually http://127.0.0.1:5000).
+
+## Important notes
+- The 48-hour alert is calculated from each issue's `created_at` value. It clears automatically when the status becomes `Resolved`.
+- Text-to-speech depends on browser and operating-system voice support. Choose Telugu for the Telugu voice where one is installed.
+- Telugu translations cover common interface labels and alerts. User-entered report titles/descriptions and some page-specific text may remain in their original language.
+- These are in-website alerts, not SMS/email notifications.
+- Do not deploy with the development secret key; set `FLASK_SECRET_KEY` to a strong secret in your environment.

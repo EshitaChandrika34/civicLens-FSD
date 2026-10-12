@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | CivicLens</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/accessibility.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <a class="logo" href="{{ url_for('home') }}">CivicLens.</a>
+        <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+    </nav>
+
+    <main class="auth-container">
+        <section class="auth-card">
+            <div class="icon">👋</div>
+            <h1>Welcome Back</h1>
+            <p class="subtitle">Log in to continue supporting your community.</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('login') }}">
+                <label for="email">Email Address</label>
+                <input id="email" name="email" type="email"
+                       autocomplete="email" maxlength="150"
+                       placeholder="Enter your email" required>
+
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password"
+                       autocomplete="current-password"
+                       placeholder="Enter your password" required>
+
+                <button type="submit">Log In</button>
+            </form>
+
+            <p class="switch-link">
+                New to CivicLens?
+                <a href="{{ url_for('signup') }}">Create an account</a>
+            </p>
+        </section>
+    </main>
+
+    <footer class="footer">
+        © 2026 CivicLens. Your City. Your Voice.
+    </footer>
+    <script src="{{ url_for('static', filename='js/accessibility.js') }}" defer></script>
+</body>
+</html>

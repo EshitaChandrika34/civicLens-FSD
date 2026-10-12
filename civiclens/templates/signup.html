@@ -1,0 +1,69 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | CivicLens</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/signup.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/accessibility.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <a class="logo" href="{{ url_for('home') }}">CivicLens.</a>
+        <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+    </nav>
+
+    <main class="auth-container">
+        <section class="auth-card">
+            <div class="icon">🏙️</div>
+            <h1>Join CivicLens</h1>
+            <p class="subtitle">Create an account and help improve your community.</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('signup') }}">
+                <label for="name">Full Name</label>
+                <input id="name" name="name" type="text"
+                       maxlength="100" autocomplete="name"
+                       placeholder="Enter your full name" required>
+
+                <label for="email">Email Address</label>
+                <input id="email" name="email" type="email"
+                       maxlength="150" autocomplete="email"
+                       placeholder="you@example.com" required>
+
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password"
+                       minlength="8" autocomplete="new-password"
+                       placeholder="At least 8 characters" required>
+
+                <label for="confirm_password">Confirm Password</label>
+                <input id="confirm_password" name="confirm_password"
+                       type="password" minlength="8"
+                       autocomplete="new-password"
+                       placeholder="Enter password again" required>
+
+                <button type="submit">Create Account</button>
+            </form>
+
+            <p class="switch-link">
+                Already have an account?
+                <a href="{{ url_for('login') }}">Log in</a>
+            </p>
+        </section>
+    </main>
+
+    <footer class="footer">
+        © 2026 CivicLens. Your City. Your Voice.
+    </footer>
+    <script src="{{ url_for('static', filename='js/accessibility.js') }}" defer></script>
+</body>
+</html>

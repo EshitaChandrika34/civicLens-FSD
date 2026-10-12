@@ -1,0 +1,300 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Report an Issue | CivicLens</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/report.css') }}">
+
+    <!-- Leaflet map styles -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/accessibility.css') }}">
+</head>
+
+<body>
+
+<nav class="navbar">
+    <a href="{{ url_for('home') }}" class="logo">CivicLens.</a>
+
+    <div class="nav-links">
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('issues') }}">Explore Issues</a>
+        <a href="{{ url_for('issue_map') }}">Issue Map</a>
+    </div>
+</nav>
+
+<section class="section">
+
+    <div class="section-heading">
+        <span class="tag">MAKE YOUR VOICE HEARD</span>
+        <h2>Report a Local Problem</h2>
+        <p>Provide the details below so your community can take notice.</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="form-message {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <form class="report-form"
+          method="POST"
+          action="{{ url_for('report') }}"
+          enctype="multipart/form-data">
+
+        <label for="title">Issue Title *</label>
+        <input type="text"
+               id="title"
+               name="title"
+               maxlength="150"
+               required
+               placeholder="Example: Pothole near the main road">
+
+        <label for="category">Issue Category *</label>
+        <select id="category" name="category" required>
+            <option value="">Select a category</option>
+            <option value="Roads">Roads &amp; Potholes</option>
+            <option value="Garbage">Garbage</option>
+            <option value="Water">Water Issues</option>
+            <option value="Streetlights">Streetlights</option>
+            <option value="Drainage">Drainage</option>
+            <option value="Other">Other</option>
+        </select>
+
+        <label for="locality">Locality / Area *</label>
+        <input type="text"
+               id="locality"
+               name="locality"
+               maxlength="150"
+               required
+               placeholder="Example: Main Road, Bhimavaram">
+
+        <label for="description">Description *</label>
+        <textarea id="description"
+                  name="description"
+                  rows="5"
+                  maxlength="3000"
+                  required
+                  placeholder="Describe the problem and its location..."></textarea>
+
+        <div class="location-heading">
+            <label for="location-map">Select the issue location *</label>
+            <p>Click the map to place a marker at the problem's location.</p>
+        </div>
+
+        <div class="map-search-row">
+            <input type="text"
+                   id="map-search"
+                   placeholder="Search an area or place name"
+                   aria-label="Search for a place">
+
+            <button type="button"
+                    id="search-location"
+                    class="secondary-button">
+                Search
+            </button>
+        </div>
+
+        <div id="location-map"
+             role="application"
+             aria-label="Click to select the issue location"></div>
+
+        <p id="location-message" class="location-message" role="status">
+            No location selected yet.
+        </p>
+
+        <div class="coordinate-fields">
+            <div>
+                <label for="latitude">Latitude</label>
+                <input type="text"
+                       id="latitude"
+                       name="latitude"
+                       readonly
+                       required
+                       placeholder="Select a point on the map">
+            </div>
+
+            <div>
+                <label for="longitude">Longitude</label>
+                <input type="text"
+                       id="longitude"
+                       name="longitude"
+                       readonly
+                       required
+                       placeholder="Select a point on the map">
+            </div>
+        </div>
+
+        <label for="photo">Upload a Photo (optional)</label>
+        <input type="file"
+               id="photo"
+               name="photo"
+               accept=".jpg,.jpeg,.png,.webp">
+
+        <button type="submit" class="primary-button">
+            Submit Report →
+        </button>
+
+        <a href="{{ url_for('home') }}" class="text-link">
+            Cancel and return home
+        </a>
+
+    </form>
+</section>
+
+<footer class="footer">
+    <p>© 2026 CivicLens. Building better communities together.</p>
+</footer>
+
+<!-- Leaflet JavaScript -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const mapElement = document.getElementById("location-map");
+    const message = document.getElementById("location-message");
+    const latitudeInput = document.getElementById("latitude");
+    const longitudeInput = document.getElementById("longitude");
+    const searchInput = document.getElementById("map-search");
+    const searchButton = document.getElementById("search-location");
+    const form = document.querySelector(".report-form");
+
+    if (typeof L === "undefined") {
+        message.textContent =
+            "The map could not load. Check your internet connection and refresh.";
+        message.classList.add("error-message");
+        return;
+    }
+
+    // Start with a general view of India. No location is preselected.
+    const map = L.map("location-map").setView([20.5937, 78.9629], 5);
+
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">' +
+            'OpenStreetMap contributors</a>'
+    }).addTo(map);
+
+    let selectedMarker = null;
+
+    function selectLocation(latitude, longitude) {
+        latitudeInput.value = latitude.toFixed(6);
+        longitudeInput.value = longitude.toFixed(6);
+
+        if (selectedMarker) {
+            selectedMarker.setLatLng([latitude, longitude]);
+        } else {
+            selectedMarker = L.marker([latitude, longitude]).addTo(map);
+        }
+
+        selectedMarker.bindPopup("Selected issue location").openPopup();
+
+        message.textContent =
+            "Location selected: " +
+            latitude.toFixed(6) + ", " + longitude.toFixed(6);
+
+        message.classList.remove("error-message");
+        message.classList.add("success-message");
+    }
+
+    map.on("click", function (event) {
+        selectLocation(event.latlng.lat, event.latlng.lng);
+    });
+
+    // Search uses OpenStreetMap's public Nominatim geocoding service.
+    // Search only after the user clicks the Search button.
+    async function searchLocation() {
+        const query = searchInput.value.trim();
+
+        if (!query) {
+            message.textContent = "Enter a place name to search.";
+            message.classList.add("error-message");
+            return;
+        }
+
+        searchButton.disabled = true;
+        searchButton.textContent = "Searching...";
+
+        try {
+            const url =
+                "https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" +
+                encodeURIComponent(query);
+
+            const response = await fetch(url, {
+                headers: {
+                    "Accept": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Search request failed");
+            }
+
+            const results = await response.json();
+
+            if (!results.length) {
+                message.textContent =
+                    "No matching place found. Try another search.";
+                message.classList.add("error-message");
+                return;
+            }
+
+            const latitude = Number(results[0].lat);
+            const longitude = Number(results[0].lon);
+
+            if (!Number.isFinite(latitude) ||
+                !Number.isFinite(longitude)) {
+                throw new Error("Invalid coordinates received");
+            }
+
+            map.setView([latitude, longitude], 16);
+            selectLocation(latitude, longitude);
+
+        } catch (error) {
+            message.textContent =
+                "Unable to search right now. You can select a point directly on the map.";
+            message.classList.add("error-message");
+        } finally {
+            searchButton.disabled = false;
+            searchButton.textContent = "Search";
+        }
+    }
+
+    searchButton.addEventListener("click", searchLocation);
+
+    searchInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            searchLocation();
+        }
+    });
+
+    form.addEventListener("submit", function (event) {
+        if (!latitudeInput.value || !longitudeInput.value) {
+            event.preventDefault();
+            message.textContent =
+                "Please select the issue location on the map before submitting.";
+            message.classList.add("error-message");
+            mapElement.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+        }
+    });
+
+    // Ensure Leaflet measures the map correctly after the page renders.
+    setTimeout(function () {
+        map.invalidateSize();
+    }, 100);
+});
+</script>
+
+    <script src="{{ url_for('static', filename='js/accessibility.js') }}" defer></script>
+</body>
+</html>

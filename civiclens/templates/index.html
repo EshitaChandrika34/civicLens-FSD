@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CivicLens | Better Communities Start Here</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/accessibility.css') }}">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="{{ url_for('home') }}" class="logo">CivicLens.</a>
+
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('issues') }}">Explore Issues</a>
+            <a href="{{ url_for('issue_map') }}">Issue Map</a>
+
+            {% if session.get('user_id') %}
+
+                <span class="welcome-user">
+                    Hi, {{ session.get('user_name') }}
+                </span>
+
+                {% if session.get('user_role') == 'admin' %}
+                    <a href="{{ url_for('admin_dashboard') }}">
+                        Admin Dashboard
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('my_reports') }}">My Reports</a>
+                {% endif %}
+
+                <a href="{{ url_for('logout') }}">Logout</a>
+
+            {% else %}
+
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('signup') }}">Sign Up</a>
+
+            {% endif %}
+
+            <a href="{{ url_for('report') }}" class="nav-button">
+                + Report an Issue
+            </a>
+        </div>
+    </nav>
+
+
+    <!-- Flash Messages -->
+    <section class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+    </section>
+
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+
+            <span class="tag">YOUR CITY. YOUR VOICE.</span>
+
+            <h1>
+                Small Reports.<br>
+                <span>Big Changes.</span>
+            </h1>
+
+            <p>
+                See a pothole, overflowing dustbin, broken streetlight,
+                or blocked drain? Report local problems, track their
+                progress, and help make your community a better place
+                to live.
+            </p>
+
+            <div class="hero-actions">
+                <a href="{{ url_for('report') }}" class="primary-button">
+                    Report a Problem →
+                </a>
+
+                <a href="{{ url_for('issues') }}" class="secondary-button">
+                    Explore Reports
+                </a>
+            </div>
+
+        </div>
+
+        <div class="hero-image" aria-label="City illustration">
+            🏙️
+        </div>
+    </section>
+
+
+    <!-- Community Statistics -->
+    <section class="section">
+        <div class="section-heading">
+            <h2>Community Impact</h2>
+            <p>
+                See how our community is working toward a better neighbourhood.
+            </p>
+        </div>
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-icon">📋</div>
+                <p>Total Reports</p>
+                <h3>{{ stats.total }}</h3>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🔧</div>
+                <p>In Progress</p>
+                <h3>{{ stats.progress }}</h3>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <p>Resolved Issues</p>
+                <h3>{{ stats.resolved }}</h3>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- Issue Categories -->
+    <section class="section">
+        <div class="section-heading">
+            <h2>What Needs Attention?</h2>
+            <p>
+                Choose a category to explore reported problems in your locality.
+            </p>
+        </div>
+
+        <div class="category-grid">
+
+            <a href="{{ url_for('issues') }}?category=Roads"
+               class="category-card">
+                <div class="icon">🛣️</div>
+                <h3>Roads &amp; Potholes</h3>
+                <p>Report damaged roads and dangerous potholes.</p>
+                <span class="category-link">Explore Issues →</span>
+            </a>
+
+            <a href="{{ url_for('issues') }}?category=Garbage"
+               class="category-card">
+                <div class="icon">🗑️</div>
+                <h3>Garbage</h3>
+                <p>Report overflowing bins and waste accumulation.</p>
+                <span class="category-link">Explore Issues →</span>
+            </a>
+
+            <a href="{{ url_for('issues') }}?category=Water"
+               class="category-card">
+                <div class="icon">💧</div>
+                <h3>Water Issues</h3>
+                <p>Report water leakage and supply problems.</p>
+                <span class="category-link">Explore Issues →</span>
+            </a>
+
+            <a href="{{ url_for('issues') }}?category=Streetlights"
+               class="category-card">
+                <div class="icon">💡</div>
+                <h3>Streetlights</h3>
+                <p>Report broken lights and dark streets.</p>
+                <span class="category-link">Explore Issues →</span>
+            </a>
+
+            <a href="{{ url_for('issues') }}?category=Drainage"
+               class="category-card">
+                <div class="icon">🌧️</div>
+                <h3>Drainage</h3>
+                <p>Report blocked drains and waterlogging.</p>
+                <span class="category-link">Explore Issues →</span>
+            </a>
+
+            <a href="{{ url_for('issues') }}?category=Other"
+               class="category-card">
+                <div class="icon">📍</div>
+                <h3>Other Issues</h3>
+                <p>Explore other problems in your locality.</p>
+                <span class="category-link">Explore Issues →</span>
+            </a>
+
+        </div>
+    </section>
+
+
+    <!-- Recent Reports -->
+    <section class="section">
+        <div class="section-heading">
+            <h2>Recent Reports</h2>
+            <p>
+                Stay informed about problems reported by the community.
+            </p>
+        </div>
+
+        <div class="issue-list">
+
+            {% for issue in recent_issues %}
+
+                <div class="issue-card">
+
+                    <div class="issue-card-content">
+
+                        <span class="issue-category">
+                            {{ issue.category }}
+                        </span>
+
+                        {% if issue.is_delayed %}
+                            <div class="civiclens-delay-alert" role="alert">⚠️ Delayed: unresolved for more than 48 hours.</div>
+                        {% endif %}
+                        <h3>{{ issue.title }}</h3>
+
+                        <p>📍 {{ issue.locality }}</p>
+
+                        <p class="report-date">
+                            {% if issue.created_at %}
+                                Reported on
+                                {{ issue.created_at.strftime('%d %b %Y') }}
+                            {% else %}
+                                Report date unavailable
+                            {% endif %}
+                        </p>
+
+                        <a class="text-link"
+                           href="{{ url_for('issue_details',
+                                            issue_id=issue.issue_id) }}">
+                            View Details →
+                        </a>
+
+                    </div>
+
+                    <span class="status
+                        {% if issue.status == 'Resolved' %}
+                            resolved
+                        {% elif issue.status == 'In Progress' %}
+                            progress
+                        {% else %}
+                            reported
+                        {% endif %}">
+                        {{ issue.status }}
+                    </span>
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+                    <div class="empty-icon">📋</div>
+                    <h3>No Reports Yet</h3>
+                    <p>
+                        Be the first to report a problem in your community.
+                    </p>
+
+                    <a href="{{ url_for('report') }}" class="primary-button">
+                        Submit Your First Report →
+                    </a>
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+        <div class="explore-all">
+            <a href="{{ url_for('issues') }}" class="text-link">
+                Explore All Issues →
+            </a>
+        </div>
+    </section>
+
+
+    <!-- Issue Tracking Information -->
+    <section class="section tracking-section">
+        <div class="section-heading">
+            <h2>From Reporting to Resolution</h2>
+            <p>
+                Follow the progress of local problems through CivicLens.
+            </p>
+        </div>
+
+        <div class="tracking-grid">
+
+            <div class="tracking-card">
+                <div class="tracking-icon">📝</div>
+                <h3>1. Report</h3>
+                <p>
+                    Submit a problem with its location, description,
+                    and an optional photo.
+                </p>
+            </div>
+
+            <div class="tracking-card">
+                <div class="tracking-icon">🔧</div>
+                <h3>2. Track Progress</h3>
+                <p>
+                    Check the current status and view progress photos
+                    when work is underway.
+                </p>
+            </div>
+
+            <div class="tracking-card">
+                <div class="tracking-icon">🎉</div>
+                <h3>3. Verify Resolution</h3>
+                <p>
+                    View resolution evidence when the issue is marked
+                    as resolved.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- Call to Action -->
+    <section class="cta">
+        <div>
+            <h2>Noticed Something That Needs Fixing?</h2>
+            <p>
+                Your report can be the first step toward a solution.
+                Help your community become cleaner, safer, and better.
+            </p>
+        </div>
+
+        <a href="{{ url_for('report') }}" class="primary-button">
+            Report Now →
+        </a>
+    </section>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>
+            © 2026 CivicLens. Building better communities together.
+        </p>
+
+        <div class="footer-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('issues') }}">Explore Issues</a>
+            <a href="{{ url_for('issue_map') }}">Issue Map</a>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/accessibility.js') }}" defer></script>
+</body>
+</html>

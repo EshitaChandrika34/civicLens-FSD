@@ -1,0 +1,62 @@
+
+/* CivicLens accessibility controls for senior citizens */
+.civiclens-accessibility {
+    position: relative;
+    z-index: 10000;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 12px 16px;
+    background: #f0f9ff;
+    border-bottom: 2px solid #0f5e82;
+    color: #123047;
+    font-size: 16px;
+}
+.civiclens-accessibility label { font-weight: 800; }
+.civiclens-accessibility select,
+.civiclens-accessibility button {
+    min-height: 42px;
+    padding: 8px 13px;
+    border: 2px solid #0f5e82;
+    border-radius: 8px;
+    background: #fff;
+    color: #123047;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+.civiclens-accessibility button:hover,
+.civiclens-accessibility select:focus,
+.civiclens-accessibility button:focus {
+    outline: 3px solid #f59e0b;
+    outline-offset: 2px;
+}
+.civiclens-large-text body,
+body.civiclens-large-text { font-size: calc(1rem * var(--civiclens-font-scale, 1.1)); }
+.civiclens-large-text p,
+.civiclens-large-text a,
+.civiclens-large-text label,
+.civiclens-large-text li,
+.civiclens-large-text button,
+.civiclens-large-text input,
+.civiclens-large-text select,
+.civiclens-large-text textarea { font-size: calc(1em * var(--civiclens-font-scale, 1.1)); }
+.civiclens-delay-alert {
+    margin: 10px 0;
+    padding: 12px 14px;
+    border: 2px solid #b91c1c;
+    border-radius: 9px;
+    background: #fff1f2;
+    color: #881337;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.5;
+}
+@media (max-width: 650px) {
+    .civiclens-accessibility { align-items: stretch; }
+    .civiclens-accessibility label { width: 100%; text-align: center; }
+    .civiclens-accessibility select,
+    .civiclens-accessibility button { flex: 1 1 42%; }
+}
